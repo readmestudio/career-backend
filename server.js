@@ -1,10 +1,3 @@
-const express = require("express");
-const cors = require("cors");   // ⬅️ 추가
-
-const app = express();
-app.use(cors());                // ⬅️ 추가
-app.use(express.json());
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -19,14 +12,17 @@ app.use(express.json());
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-app.post("/api/generate-career", async (req, res) => {
+// ============================
+// 🔥 핵심 API 엔드포인트
+// ============================
+app.post("/generate", async (req, res) => {
   const { experiences } = req.body;
 
   if (!experiences) {
     return res.status(400).json({ error: "experiences is required" });
   }
 
-const prompt = `
+  const prompt = `
 너는 ‘경력기술서 자동 생성 엔진’이다.
 
 사용자가 제공한 경험은 불완전할 수 있다. 일부 필드는 공란일 수 있다.
@@ -70,14 +66,19 @@ ${JSON.stringify(experiences, null, 2)}
 
   try {
     const result = await model.generateContent(prompt);
-    const textResponse = result.response.text();
-    const parsed = JSON.parse(textResponse);
-    return res.json(parsed);
+    const text = result.response.text();
+    const json = JSON.parse(text);
+
+    return res.json(json);
   } catch (err) {
-    return res.status(500).json({ error: "AI 오류", detail: err.toString() });
+    console.error(err);
+    return res.status(500).json({ error: "AI Error", detail: err.toString() });
   }
 });
 
+// ============================
+// 서버 실행
+// ============================
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("Server running on port " + port);
