@@ -1,3 +1,10 @@
+const express = require("express");
+const cors = require("cors");   // ⬅️ 추가
+
+const app = express();
+app.use(cors());                // ⬅️ 추가
+app.use(express.json());
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
