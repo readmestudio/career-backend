@@ -10,11 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // <-- 수정됨
 
-// ============================
-// 🔥 핵심 API 엔드포인트
-// ============================
 app.post("/generate", async (req, res) => {
   const { experiences } = req.body;
 
@@ -47,17 +44,8 @@ app.post("/generate", async (req, res) => {
 코드 블록 없이 JSON만 출력하라:
 
 {
-  "structured": [
-    {
-      "experienceTitle": "",
-      "problem": "",
-      "role": "",
-      "strategy": "",
-      "action": "",
-      "result": ""
-    }
-  ],
-  "narrative": "여기에 서술형 경력기술서"
+  "structured": [{...}],
+  "narrative": ""
 }
 
 입력 데이터:
@@ -76,9 +64,6 @@ ${JSON.stringify(experiences, null, 2)}
   }
 });
 
-// ============================
-// 서버 실행
-// ============================
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("Server running on port " + port);
